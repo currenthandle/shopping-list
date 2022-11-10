@@ -41,7 +41,10 @@ const Signup: NextPage = () => {
   // const onSubmit: SubmitHandler<Inputs> = (data) => console.log('hi', data)
   const onSubmit = (data: Schema) => {
     console.log('hi', data)
-    mutate(data)
+    mutate({
+      email: data.email,
+      password: data.password,
+    })
   }
 
   console.log('errors', errors)
