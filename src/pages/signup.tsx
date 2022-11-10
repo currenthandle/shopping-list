@@ -10,8 +10,8 @@ import { trpc } from '../utils/trpc'
 // }
 
 const schema = z.object({
-  email: z.string().email(),
-  password: z.string().min(2),
+  email: z.string().email({ message: 'Email is required' }),
+  password: z.string().min(2, { message: 'Too short' }),
 })
 
 type Schema = z.infer<typeof schema>
@@ -62,7 +62,7 @@ const Signup: NextPage = () => {
           >
             <label htmlFor='email'>email</label>
             <input
-              {...register('email', { required: 'This is required' })}
+              {...register('email')}
               className='rounded-md border-2 border-black'
               type='email'
               name='email'
@@ -72,13 +72,7 @@ const Signup: NextPage = () => {
             <p>{errors.email?.message}</p>
             <label htmlFor='password'>Password</label>
             <input
-              {...register('password', {
-                required: 'This is required',
-                minLength: {
-                  value: 1,
-                  message: 'Password must have at least 2 characters',
-                },
-              })}
+              {...register('password')}
               className='rounded-md border-2 border-black'
               type='password'
               name='password'
