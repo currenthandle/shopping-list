@@ -16,7 +16,7 @@ export const userRouter = router({
     .input(
       z.object({
         email: z.string(),
-        password: z.string(),
+        password: z.string().min(1),
       })
     )
     .mutation(async ({ input, ctx }) => {

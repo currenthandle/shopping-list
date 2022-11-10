@@ -75,7 +75,7 @@ const Signup: NextPage = () => {
               {...register('password', {
                 required: 'This is required',
                 minLength: {
-                  value: 2,
+                  value: 1,
                   message: 'Password must have at least 2 characters',
                 },
               })}
