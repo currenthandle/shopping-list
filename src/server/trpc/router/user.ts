@@ -4,6 +4,14 @@ import bcrypt from 'bcrypt'
 import { router, publicProcedure } from '../trpc'
 
 export const userRouter = router({
+  getAll: publicProcedure.query(async ({ ctx }) => {
+    try {
+      const users = await ctx.prisma.user.findMany()
+      return users
+    } catch (error) {
+      console.log(error)
+    }
+  }),
   create: publicProcedure
     .input(
       z.object({
@@ -11,7 +19,7 @@ export const userRouter = router({
         password: z.string(),
       })
     )
-    .mutation(({ input, ctx }) => {
+    .mutation(async ({ input, ctx }) => {
       const SALT_ROUNDS = 10
       try {
         const user = await ctx.prisma.user.create({
