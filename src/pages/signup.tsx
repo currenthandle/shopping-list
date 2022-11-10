@@ -33,7 +33,7 @@ const Signup: NextPage = () => {
 
   console.log('errors', errors)
   //console.log('watch', watch('example')) // watch input value by passing the name of it
-  console.log('watch', watch('email')) // watch input value by passing the name of it
+  //console.log('watch', watch('email')) // watch input value by passing the name of it
 
   return (
     <div className='flex justify-center pt-10'>
@@ -51,7 +51,9 @@ const Signup: NextPage = () => {
               type='email'
               name='email'
               id='email'
+              placeholder='Email'
             />
+            <p>{errors.email?.message}</p>
             <label htmlFor='password'>Password</label>
             <input
               {...register('password', {
@@ -65,7 +67,9 @@ const Signup: NextPage = () => {
               type='password'
               name='password'
               id='password'
+              placeholder='Password'
             />
+            <p>{errors.password?.message}</p>
 
             <div className='flex justify-center'>
               <button
