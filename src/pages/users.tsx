@@ -10,7 +10,7 @@ const users: NextPage = () => {
       <h1>Users</h1>
       {data?.map((user) => (
         <div key={user.id}>
-          {user.name} + {user.password}
+          {user.email} + {user.password}
         </div>
       ))}
     </div>

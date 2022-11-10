@@ -2,6 +2,7 @@ import { type NextPage } from 'next'
 import { useForm, type SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
+import { trpc } from '../utils/trpc'
 
 // type Inputs = {
 //   email: string
@@ -16,6 +17,15 @@ const schema = z.object({
 type Schema = z.infer<typeof schema>
 
 const Signup: NextPage = () => {
+  const { mutate } = trpc.user.create.useMutation({
+    onSuccess: (data) => {
+      console.log('data', data)
+    },
+    onError: (error) => {
+      console.error('error', error)
+    },
+  })
+
   const {
     register,
     handleSubmit,
@@ -29,7 +39,10 @@ const Signup: NextPage = () => {
     },
   })
   // const onSubmit: SubmitHandler<Inputs> = (data) => console.log('hi', data)
-  const onSubmit = (data: Schema) => console.log('hi', data)
+  const onSubmit = (data: Schema) => {
+    console.log('hi', data)
+    mutate(data)
+  }
 
   console.log('errors', errors)
   //console.log('watch', watch('example')) // watch input value by passing the name of it

@@ -20,6 +20,7 @@ export const userRouter = router({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      console.log('input', input)
       const SALT_ROUNDS = 10
       try {
         const user = await ctx.prisma.user.create({
