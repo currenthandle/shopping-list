@@ -12,10 +12,10 @@ export const itemRouter = router({
     )
     .query(async ({ input, ctx }) => {
       try {
-        const userEmail = ctx.session?.user?.email
-        if (!userEmail) {
-          throw new Error('No user email')
-        }
+        // const userEmail = ctx.session?.user?.email
+        // if (!userEmail) {
+        //   throw new Error('No user email')
+        // }
         // const user = await ctx.prisma.user.findUnique({
         //   where: { email: userEmail },
         // })
@@ -23,11 +23,12 @@ export const itemRouter = router({
         //   where: { userId: user?.id },
         // })
         const items = await ctx.prisma.item.findMany({
-          where: { shoppingListId: shoppingList?.id },
+          where: { shoppingListId: input.shoppingListId },
         })
-        return { items }
+        return items
       } catch (error) {
         console.error(error)
       }
+      return null
     }),
 })
