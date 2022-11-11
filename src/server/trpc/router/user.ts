@@ -22,6 +22,8 @@ export const userRouter = router({
     .mutation(async ({ input, ctx }) => {
       console.log('input', input)
       const SALT_ROUNDS = 10
+
+      // create new shopping list
       try {
         const user = await ctx.prisma.user.create({
           data: {
@@ -29,6 +31,17 @@ export const userRouter = router({
             password: bcrypt.hashSync(input.password, SALT_ROUNDS),
           },
         })
+        // create new shopping list with userId
+        try {
+          await ctx.prisma.shoppingList.create({
+            data: {
+              userId: user.id,
+            },
+          })
+        } catch (error) {
+          console.error(error)
+        }
+
         return user
       } catch (error) {
         console.error(error)
