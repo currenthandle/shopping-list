@@ -3,6 +3,9 @@ import { useForm, type SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { trpc } from '../utils/trpc'
+import { signIn } from 'next-auth/react'
+//import { Schema } from 'zod'
+import { useRouter } from 'next/router'
 
 // type Inputs = {
 //   email: string
@@ -16,10 +19,29 @@ const schema = z.object({
 
 type Schema = z.infer<typeof schema>
 
+//type SuccessInput extends Schema
+
 const Signup: NextPage = () => {
+  const router = useRouter()
   const { mutate } = trpc.user.create.useMutation({
-    onSuccess: (data) => {
-      console.log('data', data)
+    onSuccess: async (data) => {
+      const formValues = getValues()
+      try {
+        const resp = await signIn('credentials', {
+          // email: data?.email,
+          // password: data?.password,
+          email: formValues.email,
+          password: formValues.password,
+          redirect: false,
+        })
+        if (resp?.ok) {
+          router.push('/')
+        } else {
+          console.error('error', resp)
+        }
+      } catch (error) {
+        console.error('error', error)
+      }
     },
     onError: (error) => {
       console.error('error', error)
@@ -29,6 +51,7 @@ const Signup: NextPage = () => {
   const {
     register,
     handleSubmit,
+    getValues,
     watch,
     formState: { errors },
   } = useForm<Schema>({
@@ -40,7 +63,7 @@ const Signup: NextPage = () => {
   })
   // const onSubmit: SubmitHandler<Inputs> = (data) => console.log('hi', data)
   const onSubmit = (data: Schema) => {
-    console.log('hi', data)
+    //console.log('hi', data)
     mutate({
       email: data.email,
       password: data.password,
