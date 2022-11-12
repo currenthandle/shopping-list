@@ -82,10 +82,9 @@ const ShoppingList: NextPage = () => {
             <label htmlFor='name'></label>
             <input
               {...register('name')}
-              className='rounded-md border-2 border-black'
+              className='rounded-md border-2 border-black text-center'
               type='text'
               name='name'
-              value={register('name').value}
             />
             <button type='submit'>Submit</button>
           </form>
