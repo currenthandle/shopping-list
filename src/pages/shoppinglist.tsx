@@ -3,6 +3,7 @@ import { trpc } from '../utils/trpc'
 import { useForm /*, type SubmitHandler */ } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import ListItem from '../components/ListItem'
 
 let count = 0
 const schema = z.object({
@@ -61,13 +62,16 @@ const ShoppingList: NextPage = () => {
         {loadingItems ? (
           <div className='flex w-full justify-center'>Loading Items...</div>
         ) : (
-          <div className=''>
-            {items?.map((item) => (
-              <div className='flex justify-center' key={item.id}>
-                {item.name}
-              </div>
+          <ol className='list-decimal' type='1'>
+            {items?.map((item, i) => (
+              <ListItem
+                refetchItems={refetchItems}
+                {...item}
+                key={item.id}
+                i={1 + i}
+              />
             ))}
-          </div>
+          </ol>
         )}
         <div className='flex w-full justify-center'>
           <form
