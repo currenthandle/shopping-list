@@ -6,13 +6,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import ListItem from '../components/ListItem'
 
 let count = 0
-const schema = z.object({
-  name: z.string().min(2, { message: 'Too short' }),
-})
-
-type Schema = z.infer<typeof schema>
-
 const ShoppingList: NextPage = () => {
+  const schema = z.object({
+    name: z.string().min(2, { message: 'Too short' }),
+  })
+
+  type Schema = z.infer<typeof schema>
+
   const { handleSubmit, register, reset } = useForm<Schema>({
     resolver: zodResolver(schema),
     defaultValues: {

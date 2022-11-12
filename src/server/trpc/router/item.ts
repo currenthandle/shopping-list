@@ -3,6 +3,29 @@ import { z } from 'zod'
 import { router, publicProcedure } from '../trpc'
 
 export const itemRouter = router({
+  updateItem: publicProcedure
+    .input(
+      z.object({
+        itemId: z.string(),
+        name: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      try {
+        const item = await ctx.prisma.item.update({
+          where: {
+            id: input.itemId,
+          },
+          data: {
+            name: input.name,
+          },
+        })
+        return item
+      } catch (error) {
+        console.error(error)
+      }
+    }),
+
   deleteItem: publicProcedure
     .input(
       z.object({
