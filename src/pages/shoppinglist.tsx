@@ -62,7 +62,7 @@ const ShoppingList: NextPage = () => {
         {loadingItems ? (
           <div className='flex w-full justify-center'>Loading Items...</div>
         ) : (
-          <ol className='list-decimal' type='1'>
+          <ol className='flex list-decimal flex-col' type='1'>
             {items?.map((item, i) => (
               <ListItem
                 refetchItems={refetchItems}
@@ -84,6 +84,7 @@ const ShoppingList: NextPage = () => {
               className='rounded-md border-2 border-black'
               type='text'
               name='name'
+              value={register('name').value}
             />
             <button type='submit'>Submit</button>
           </form>
