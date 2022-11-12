@@ -4,16 +4,22 @@ import { useEffect, useState } from 'react'
 import { trpc } from '../utils/trpc'
 import { useForm, type SubmitHandler } from 'react-hook-form'
 import { z } from 'zod'
-import { useRouter } from 'next/router'
-
-interface ItemsListProps {
-  shoppingListId: string
-}
+import { zodResolver } from '@hookform/resolvers/zod'
 
 let count = 0
+const schema = z.object({
+  name: z.string().min(2, { message: 'Too short' }),
+})
+
+type Schema = z.infer<typeof schema>
 
 const ShoppingList: NextPage = () => {
-  const { handleSubmit, register } = useForm()
+  const { handleSubmit, register } = useForm<Schema>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      name: '',
+    },
+  })
   //const { data: sessionData } = useSession()
 
   const { data: shoppingList, isLoading: loadingShoppingList } =
@@ -35,12 +41,6 @@ const ShoppingList: NextPage = () => {
       console.error('error', error)
     },
   })
-
-  const schema = z.object({
-    name: z.string().min(2, { message: 'Too short' }),
-  })
-
-  type Schema = z.infer<typeof schema>
 
   const onSubmit = async (data: Schema) => {
     mutate({
