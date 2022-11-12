@@ -29,7 +29,6 @@ const ShoppingList: NextPage = () => {
 
   const { mutate } = trpc.item.create.useMutation({
     onSuccess: async (data) => {
-      console.log('success  data!!!!!', data)
       refetchItems()
     },
     onError: (error) => {
@@ -50,9 +49,6 @@ const ShoppingList: NextPage = () => {
     })
   }
 
-  console.log('shoppingList', shoppingList)
-  console.log('items', items)
-  console.log('')
   if (loadingShoppingList) {
     return <div>Loading...</div>
   }
@@ -62,7 +58,7 @@ const ShoppingList: NextPage = () => {
       <div className='w-6/12 rounded-lg border-2 py-4'>
         <p>COUNT: {count}</p>
         <h1 className='flex w-full justify-center'>
-          ShoppingList: ${shoppingList?.id}
+          ShoppingList: {shoppingList?.id}
         </h1>
         {loadingItems ? (
           <div className='flex w-full justify-center'>Loading Items...</div>
