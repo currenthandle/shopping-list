@@ -19,20 +19,18 @@ const ShoppingList: NextPage = () => {
   const { data: shoppingList, isLoading: loadingShoppingList } =
     trpc.shoppingList.getShoppingList.useQuery()
 
-  const [items, setItems] = useState([])
-
-  const { data: _items, isLoading: loadingItems } =
-    trpc.item.getAllFromList.useQuery({
-      shoppingListId: shoppingList?.id || '',
-    })
-  useEffect(() => {
-    setItems(_items)
+  const {
+    data: items,
+    isLoading: loadingItems,
+    refetch: refetchItems,
+  } = trpc.item.getAllFromList.useQuery({
+    shoppingListId: shoppingList?.id || '',
   })
 
   const { mutate } = trpc.item.create.useMutation({
     onSuccess: async (data) => {
       console.log('success  data!!!!!', data)
-      setItems([...items, data?.name])
+      refetchItems()
     },
     onError: (error) => {
       console.error('error', error)
