@@ -13,7 +13,7 @@ const schema = z.object({
 type Schema = z.infer<typeof schema>
 
 const ShoppingList: NextPage = () => {
-  const { handleSubmit, register } = useForm<Schema>({
+  const { handleSubmit, register, reset } = useForm<Schema>({
     resolver: zodResolver(schema),
     defaultValues: {
       name: '',
@@ -35,6 +35,7 @@ const ShoppingList: NextPage = () => {
   const { mutate } = trpc.item.create.useMutation({
     onSuccess: async () => {
       refetchItems()
+      reset()
     },
     onError: (error) => {
       console.error('error', error)
