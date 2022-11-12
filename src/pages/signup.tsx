@@ -1,16 +1,10 @@
 import { type NextPage } from 'next'
-import { useForm, type SubmitHandler } from 'react-hook-form'
+import { useForm /*, type SubmitHandler*/ } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
+import { z } from 'zod'
 import { trpc } from '../utils/trpc'
 import { signIn } from 'next-auth/react'
-//import { Schema } from 'zod'
 import { useRouter } from 'next/router'
-
-// type Inputs = {
-//   email: string
-//   password: string
-// }
 
 const schema = z.object({
   email: z.string().email({ message: 'Email is required' }),
@@ -19,17 +13,13 @@ const schema = z.object({
 
 type Schema = z.infer<typeof schema>
 
-//type SuccessInput extends Schema
-
 const Signup: NextPage = () => {
   const router = useRouter()
   const { mutate } = trpc.user.create.useMutation({
-    onSuccess: async (data) => {
+    onSuccess: async () => {
       const formValues = getValues()
       try {
         const resp = await signIn('credentials', {
-          // email: data?.email,
-          // password: data?.password,
           email: formValues.email,
           password: formValues.password,
           redirect: false,
@@ -52,7 +42,6 @@ const Signup: NextPage = () => {
     register,
     handleSubmit,
     getValues,
-    watch,
     formState: { errors },
   } = useForm<Schema>({
     resolver: zodResolver(schema),
@@ -63,16 +52,11 @@ const Signup: NextPage = () => {
   })
   // const onSubmit: SubmitHandler<Inputs> = (data) => console.log('hi', data)
   const onSubmit = (data: Schema) => {
-    //console.log('hi', data)
     mutate({
       email: data.email,
       password: data.password,
     })
   }
-
-  console.log('errors', errors)
-  //console.log('watch', watch('example')) // watch input value by passing the name of it
-  //console.log('watch', watch('email')) // watch input value by passing the name of it
 
   return (
     <div className='flex justify-center pt-10'>

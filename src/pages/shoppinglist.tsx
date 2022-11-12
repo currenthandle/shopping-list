@@ -1,8 +1,6 @@
 import { type NextPage } from 'next'
-import { useSession } from 'next-auth/react'
-import { useEffect, useState } from 'react'
 import { trpc } from '../utils/trpc'
-import { useForm, type SubmitHandler } from 'react-hook-form'
+import { useForm /*, type SubmitHandler */ } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 
@@ -34,7 +32,7 @@ const ShoppingList: NextPage = () => {
   })
 
   const { mutate } = trpc.item.create.useMutation({
-    onSuccess: async (data) => {
+    onSuccess: async () => {
       refetchItems()
     },
     onError: (error) => {
