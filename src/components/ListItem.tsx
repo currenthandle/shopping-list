@@ -1,5 +1,5 @@
 //import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { useEffect, useState } from 'react'
+import { SyntheticEvent, useEffect, useState } from 'react'
 import { TiDelete } from 'react-icons/ti'
 import { trpc } from '../utils/trpc'
 import { useForm } from 'react-hook-form'
@@ -33,7 +33,7 @@ const Editor = ({ name, itemId, dispatch }: EditorProps) => {
   const { mutate } = trpc.item.updateItem.useMutation({
     onSuccess: async () => {
       dispatch({
-        type: 'UPDATE_ITEM',
+        type: ACTIONS.updateItem,
         payload: { id: itemId, name: getValues().name },
       })
       setIsEditing(false)
@@ -57,6 +57,13 @@ const Editor = ({ name, itemId, dispatch }: EditorProps) => {
     <span
       onClick={() => {
         setIsEditing(!isEditing)
+      }}
+      onBlur={(e: React.ChangeEvent<HTMLInputElement>) => {
+        mutate({
+          name: e.target.value,
+          itemId: itemId,
+        })
+        return
       }}
     >
       {isEditing ? (
