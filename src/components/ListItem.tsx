@@ -54,11 +54,22 @@ const Editor = ({ name, itemId, dispatch }: EditorProps) => {
   }, [isEditing, setFocus])
 
   return (
-    <span
+    <div
       onClick={() => {
-        setIsEditing(!isEditing)
+        if (!isEditing) {
+          setIsEditing(true)
+        }
       }}
-      onBlur={(e: React.ChangeEvent<HTMLInputElement>) => {
+      onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
+        // if users click on a delete item icon then don't update the item
+        const relatedTarget = e.relatedTarget as HTMLElement
+        if (
+          relatedTarget.className.includes('delete-li') &&
+          relatedTarget.id === itemId
+        ) {
+          return
+        }
+
         mutate({
           name: e.target.value,
           itemId: itemId,
@@ -70,16 +81,14 @@ const Editor = ({ name, itemId, dispatch }: EditorProps) => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <input
             type='text'
-            className='border-grey-300 rounded-md border-2 text-center'
+            className='border-grey-300 rounded-md text-center'
             {...register('name')}
-            // onChange={(e) => setValue(e.target.value)}
           />
-          {/* <button type='submit'>Save</button> */}
         </form>
       ) : (
         name
       )}
-    </span>
+    </div>
   )
 }
 
@@ -108,12 +117,12 @@ const ListItem = ({ name, id: itemId, i, dispatch }: ListItemProps) => {
   }
 
   return (
-    <li className='flex w-full justify-center pt-2'>
+    <li className='flex h-10 w-full justify-center pt-2'>
       <div className='flex w-6/12 justify-between'>
         <span>{i}) </span>
         <Editor dispatch={dispatch} name={name} itemId={itemId} />
         {/* a small round icon button for deleting items  */}
-        <button onClick={handleDeleteClick}>
+        <button className='delete-li' id={itemId} onClick={handleDeleteClick}>
           <TiDelete className='h-6 w-6 text-red-500' />
         </button>
       </div>
