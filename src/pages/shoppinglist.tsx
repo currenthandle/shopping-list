@@ -5,28 +5,14 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import ListItem from '../components/ListItem'
 import { useEffect, useReducer } from 'react'
-import { Item, ShoppingList as ShoppingListType } from '@prisma/client'
+import {
+  type Item,
+  type ShoppingList as ShoppingListType,
+} from '@prisma/client'
 
 // type ItemRecords = Record<string, Item>
 type ItemRecords = {
   [key: string]: Item
-}
-
-const testIR: ItemRecords = {
-  '1': {
-    id: '1',
-    name: 'test',
-    shoppingListId: '4',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  '4': {
-    id: '1',
-    name: 'test',
-    shoppingListId: '4',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
 }
 
 export const ACTIONS = {
@@ -93,8 +79,6 @@ function reducer(state: State, action: Action): State {
       return {
         ...state,
         items: action.payload?.reduce<ItemRecords>((acc, item): ItemRecords => {
-          // console.log('typeof item', typeof item)
-          // console.log('item in reduce', item)
           acc[item.id] = item
           return acc
         }, {}),
