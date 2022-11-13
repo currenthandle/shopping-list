@@ -7,10 +7,10 @@ import ListItem from '../components/ListItem'
 import { useEffect, useReducer } from 'react'
 import { Item, ShoppingList as ShoppingListType } from '@prisma/client'
 
-type ItemRecords = Record<string, Item>
-// type ItemRecords = {
-//   [key: string]: Item
-// }
+// type ItemRecords = Record<string, Item>
+type ItemRecords = {
+  [key: string]: Item
+}
 
 const testIR: ItemRecords = {
   '1': {
@@ -42,7 +42,7 @@ type State = {
   shoppingList: ShoppingListType
 }
 
-type UpateItemPayload = {
+type UpdateItemPayload = {
   id: string
   name: string
 }
@@ -52,7 +52,7 @@ export type Action = {
   //type: typeof actions[keyof typeof actions]
   //type: 'FETCH_ITEMS' | 'ADD_ITEM'
   type: string
-  payload: Item[] | ShoppingListType | UpateItemPayload | string
+  payload: Item[] | Item | ShoppingListType | UpdateItemPayload | string
 }
 
 let count = 0
@@ -70,7 +70,7 @@ function reducer(state: State, action: Action): State {
       return { ...state, items }
     }
     case ACTIONS.updateItem: {
-      const { id, name } = action.payload as UpateItemPayload
+      const { id, name } = action.payload as UpdateItemPayload
       const item = state.items[id]
       const newItem = { ...item, name }
       const newItems = { ...state.items, [id]: newItem }
@@ -90,7 +90,7 @@ function reducer(state: State, action: Action): State {
         )
         return state
       }
-      const newState = {
+      return {
         ...state,
         items: action.payload?.reduce<ItemRecords>((acc, item): ItemRecords => {
           // console.log('typeof item', typeof item)
@@ -99,12 +99,14 @@ function reducer(state: State, action: Action): State {
           return acc
         }, {}),
       }
-      console.log('newState', newState)
-      return newState
     case ACTIONS.addItem:
+      console.log('action.payload', action.payload)
       return {
         ...state,
-        //items: [...state.items, action.payload],
+        items: {
+          ...state.items,
+          [action.payload.id]: action.payload,
+        } as ItemRecords,
       }
 
     default:
@@ -149,13 +151,16 @@ const ShoppingList: NextPage = () => {
   }, [_shoppingList])
 
   useEffect(() => {
-    dispatch({ type: 'FETCH_ITEMS', payload: _items as Item[] })
+    dispatch({ type: ACTIONS.fetchItems, payload: _items as Item[] })
   }, [_items])
 
   const { mutate } = trpc.item.create.useMutation({
-    onSuccess: async () => {
-      console.log('onSuccess')
-      refetchItems()
+    onSuccess: async (data: Item | undefined) => {
+      console.log('onSuccess', data)
+      if (!data) {
+        throw new Error('no user data resturned')
+      }
+      dispatch({ type: ACTIONS.addItem, payload: data as Item })
       reset()
     },
     onError: (error) => {
