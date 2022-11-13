@@ -85,11 +85,12 @@ function reducer(state: State, action: Action): State {
       }
     case ACTIONS.addItem:
       console.log('action.payload', action.payload)
+      const { id } = action.payload as Item
       return {
         ...state,
         items: {
           ...state.items,
-          [action.payload.id]: action.payload,
+          [id]: action.payload,
         } as ItemRecords,
       }
 
