@@ -55,12 +55,17 @@ export const itemRouter = router({
     )
     .mutation(async ({ input, ctx }) => {
       try {
+        console.log('in create item mutation, input', input)
+        console.log('in create item mutation, input', input)
+        console.log('in create item mutation, input', input)
+        console.log('in create item mutation, input', input)
         const item = await ctx.prisma.item.create({
           data: {
             name: input.name,
             shoppingListId: input.shoppingListId,
           },
         })
+        console.log('item', item)
         return item
       } catch (error) {
         console.error(error)

@@ -6,7 +6,12 @@ import { type NextApiRequest, type NextApiResponse } from 'next'
 import { prisma } from '../../server/db/client'
 
 const items = async (req: NextApiRequest, res: NextApiResponse) => {
-  if (req.method === 'DELETE') {
+  // write a get all items query
+  if (req.method === 'GET') {
+    const items = await prisma.item.findMany()
+    console.log('api/items.ts items', items)
+    res.status(200).json(items)
+  } else if (req.method === 'DELETE') {
     const items = await prisma.item.deleteMany()
     res.status(200).json(items)
   }

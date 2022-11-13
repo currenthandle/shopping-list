@@ -7,65 +7,93 @@ import ListItem from '../components/ListItem'
 import { useEffect, useReducer } from 'react'
 import { Item, ShoppingList as ShoppingListType } from '@prisma/client'
 
-type Items = Record<string, Item>
+type ItemRecords = Record<string, Item>
+// type ItemRecords = {
+//   [key: string]: Item
+// }
+
+const testIR: ItemRecords = {
+  '1': {
+    id: '1',
+    name: 'test',
+    shoppingListId: '4',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  '4': {
+    id: '1',
+    name: 'test',
+    shoppingListId: '4',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+}
 
 const ACTIONS = {
   fetchItems: 'FETCH_ITEMS',
   addItem: 'ADD_ITEM',
+  fetchShoppingList: 'FETCH_SHOPPING_LIST',
 }
 
-interface State {
-  items: Items[]
+type State = {
+  items: ItemRecords
   shoppingList: ShoppingListType
 }
 
-interface Action {
+type Action = {
   // use the values of actions object to set the type on Action to type: 'FETCH_ITEMS' | 'ADD_ITEM'
   //type: typeof actions[keyof typeof actions]
-  type: 'FETCH_ITEMS' | 'ADD_ITEM'
-  payload: Items[] | ShoppingListType
+  //type: 'FETCH_ITEMS' | 'ADD_ITEM'
+  type: string
+  payload: Item[] | ShoppingListType
 }
 
 let count = 0
-const ShoppingList: NextPage = () => {
-  function reducer(state: State, action: Action) {
-    console.log('state', state)
-    console.log('action', action)
-    //const items =     // console.log('items first', items)
-    switch (action.type) {
-      case ACTIONS.fetchItems:
-        // check it action.paload is not an array
-        // if it is not an array, log and error and return state
-        if (!Array.isArray(action.payload)) {
-          console.error(
-            'action.payload is not an array, the payload is incorrect for this action'
-          )
-          return state
-        }
-        const newState = {
-          ...state,
-          items: action.payload?.reduce(
-            (acc: Items, item: Item) => {
-              console.log('typeof item', typeof item)
-              console.log('item in reduce', item)
-              acc[item.id] = item
-              return acc
-            },
-            { images: {}, shoppingList: {} }
-          ),
-        }
-        console.log('newState', newState)
-        return newState
-      case ACTIONS.addItem:
-        return {
-          ...state,
-          //items: [...state.items, action.payload],
-        }
+const initialState: State = {
+  items: {} as ItemRecords,
+  shoppingList: {} as ShoppingListType,
+}
+function reducer(state: State, action: Action): State {
+  console.log('state', state)
+  console.log('action', action)
+  switch (action.type) {
+    case ACTIONS.fetchShoppingList:
+      return {
+        ...state,
+        shoppingList: action.payload as ShoppingListType,
+      }
+    case ACTIONS.fetchItems:
+      // check it action.paload is not an array
+      // if it is not an array, log and error and return state
+      if (!Array.isArray(action.payload)) {
+        console.error(
+          'action.payload is not an array, the payload is incorrect for this action'
+        )
+        return state
+      }
+      const newState = {
+        ...state,
+        items: action.payload?.reduce<ItemRecords>((acc, item): ItemRecords => {
+          // console.log('typeof item', typeof item)
+          // console.log('item in reduce', item)
+          acc[item.id] = item
+          return acc
+        }, {}),
+      }
+      console.log('newState', newState)
+      return newState
+    case ACTIONS.addItem:
+      return {
+        ...state,
+        //items: [...state.items, action.payload],
+      }
 
-      default:
-        throw new Error()
-    }
+    default:
+      //throw new Error()
+      return state
   }
+}
+const ShoppingList: NextPage = () => {
   const schema = z.object({
     name: z.string().min(2, { message: 'Too short' }),
   })
@@ -80,34 +108,48 @@ const ShoppingList: NextPage = () => {
   })
   //const { data: sessionData } = useSession()
 
-  const { data: shoppingList, isLoading: loadingShoppingList } =
+  const { data: _shoppingList, isLoading: loadingShoppingList } =
     trpc.shoppingList.getShoppingList.useQuery()
 
   useEffect(() => {
-    console.log('shoppingList', shoppingList)
-  }, [shoppingList])
+    //console.log('shoppingList', _shoppingList)
+    dispatch({
+      type: ACTIONS.fetchShoppingList,
+      payload: _shoppingList as ShoppingListType,
+    })
+  }, [_shoppingList])
 
   const {
     data: _items,
     isLoading: loadingItems,
     refetch: refetchItems,
   } = trpc.item.getAllFromList.useQuery({
-    shoppingListId: shoppingList?.id || '',
+    shoppingListId: _shoppingList?.id || '',
   })
 
   // const initialItemState = {
   //   items: _items || [],
   // }
 
-  const [items, dispatch] = useReducer(reducer, {})
+  const [state, dispatch] = useReducer(reducer, initialState)
+
+  const { items, shoppingList } = state
 
   useEffect(() => {
     // console.log('useEffect', _items)
-    dispatch({ type: 'FETCH_ITEMS', payload: _items })
+    console.log('_items', _items)
+    console.log('_items', _items)
+    console.log('_items', _items)
+    console.log('_items', _items)
+    console.log('_items', _items)
+    console.log('_items', _items)
+    console.log('_items', _items)
+    dispatch({ type: 'FETCH_ITEMS', payload: _items as Item[] })
   }, [_items])
 
   const { mutate } = trpc.item.create.useMutation({
     onSuccess: async () => {
+      console.log('onSuccess')
       refetchItems()
       reset()
     },
@@ -139,7 +181,7 @@ const ShoppingList: NextPage = () => {
         ) : (
           <ol className='flex list-decimal flex-col' type='1'>
             {/* {console.log('items from tsx', items)} */}
-            {Object.values(items?.items || {}).map((item, i) => (
+            {Object.values(items || {}).map((item, i) => (
               // console.log('item!!!!!!!', item),
               <ListItem
                 refetchItems={refetchItems}
