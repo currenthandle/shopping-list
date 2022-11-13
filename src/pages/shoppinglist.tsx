@@ -4,9 +4,68 @@ import { useForm /*, type SubmitHandler */ } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import ListItem from '../components/ListItem'
+import { useEffect, useReducer } from 'react'
+import { Item, ShoppingList as ShoppingListType } from '@prisma/client'
+
+type Items = Record<string, Item>
+
+const ACTIONS = {
+  fetchItems: 'FETCH_ITEMS',
+  addItem: 'ADD_ITEM',
+}
+
+interface State {
+  items: Items[]
+  shoppingList: ShoppingListType
+}
+
+interface Action {
+  // use the values of actions object to set the type on Action to type: 'FETCH_ITEMS' | 'ADD_ITEM'
+  //type: typeof actions[keyof typeof actions]
+  type: 'FETCH_ITEMS' | 'ADD_ITEM'
+  payload: Items[] | ShoppingListType
+}
 
 let count = 0
 const ShoppingList: NextPage = () => {
+  function reducer(state: State, action: Action) {
+    console.log('state', state)
+    console.log('action', action)
+    //const items =     // console.log('items first', items)
+    switch (action.type) {
+      case ACTIONS.fetchItems:
+        // check it action.paload is not an array
+        // if it is not an array, log and error and return state
+        if (!Array.isArray(action.payload)) {
+          console.error(
+            'action.payload is not an array, the payload is incorrect for this action'
+          )
+          return state
+        }
+        const newState = {
+          ...state,
+          items: action.payload?.reduce(
+            (acc: Items, item: Item) => {
+              console.log('typeof item', typeof item)
+              console.log('item in reduce', item)
+              acc[item.id] = item
+              return acc
+            },
+            { images: {}, shoppingList: {} }
+          ),
+        }
+        console.log('newState', newState)
+        return newState
+      case ACTIONS.addItem:
+        return {
+          ...state,
+          //items: [...state.items, action.payload],
+        }
+
+      default:
+        throw new Error()
+    }
+  }
   const schema = z.object({
     name: z.string().min(2, { message: 'Too short' }),
   })
@@ -24,13 +83,28 @@ const ShoppingList: NextPage = () => {
   const { data: shoppingList, isLoading: loadingShoppingList } =
     trpc.shoppingList.getShoppingList.useQuery()
 
+  useEffect(() => {
+    console.log('shoppingList', shoppingList)
+  }, [shoppingList])
+
   const {
-    data: items,
+    data: _items,
     isLoading: loadingItems,
     refetch: refetchItems,
   } = trpc.item.getAllFromList.useQuery({
     shoppingListId: shoppingList?.id || '',
   })
+
+  // const initialItemState = {
+  //   items: _items || [],
+  // }
+
+  const [items, dispatch] = useReducer(reducer, {})
+
+  useEffect(() => {
+    // console.log('useEffect', _items)
+    dispatch({ type: 'FETCH_ITEMS', payload: _items })
+  }, [_items])
 
   const { mutate } = trpc.item.create.useMutation({
     onSuccess: async () => {
@@ -64,11 +138,13 @@ const ShoppingList: NextPage = () => {
           <div className='flex w-full justify-center'>Loading Items...</div>
         ) : (
           <ol className='flex list-decimal flex-col' type='1'>
-            {items?.map((item, i) => (
+            {/* {console.log('items from tsx', items)} */}
+            {Object.values(items?.items || {}).map((item, i) => (
+              // console.log('item!!!!!!!', item),
               <ListItem
                 refetchItems={refetchItems}
                 {...item}
-                key={item.id}
+                key={item?.id}
                 i={1 + i}
               />
             ))}
