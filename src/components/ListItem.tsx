@@ -5,8 +5,7 @@ import { trpc } from '../utils/trpc'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Action, ACTIONS } from '../pages/shoppinglist'
-import { Item } from '@prisma/client'
+import { ACTIONS, type Action } from '../pages/shoppinglist'
 
 interface EditorProps {
   name: string
@@ -90,27 +89,21 @@ const ListItem = ({ name, id: itemId, i, dispatch }: ListItemProps) => {
       if (!data) {
         throw new Error('Could not delete item')
       }
-      //console.log('deleteItem', data)
       dispatch({ type: ACTIONS.deleteItem, payload: data.id })
     },
     onError: (error) => {
       console.error('error', error)
     },
   })
-  const [editing, setEditing] = useState(false)
 
-  async function handleDeleteClick(e) {
+  async function handleDeleteClick() {
     deleteItem({ itemId })
-  }
-  function handleEditClick(e) {
-    console.log('edit')
   }
 
   return (
     <li className='flex w-full justify-center pt-2'>
       <div className='flex w-6/12 justify-between'>
         <span>{i}) </span>
-        {/* <span>{name}</span> */}
         <Editor dispatch={dispatch} name={name} itemId={itemId} />
         {/* a small round icon button for deleting items  */}
         <button onClick={handleDeleteClick}>
