@@ -116,6 +116,13 @@ const ShoppingList: NextPage = () => {
 
   const { data: _shoppingList, isLoading: loadingShoppingList } =
     trpc.shoppingList.getShoppingList.useQuery()
+  useEffect(() => {
+    if (!_shoppingList) return
+    dispatch({
+      type: ACTIONS.fetchShoppingList,
+      payload: _shoppingList as ShoppingListType,
+    })
+  }, [_shoppingList])
 
   const { data: _items, isLoading: loadingItems } =
     trpc.item.getAllFromList.useQuery({
@@ -126,13 +133,7 @@ const ShoppingList: NextPage = () => {
   const { items, shoppingList } = state
 
   useEffect(() => {
-    dispatch({
-      type: ACTIONS.fetchShoppingList,
-      payload: _shoppingList as ShoppingListType,
-    })
-  }, [_shoppingList])
-
-  useEffect(() => {
+    if (!_items) return
     dispatch({ type: ACTIONS.fetchItems, payload: _items as Item[] })
   }, [_items])
 
