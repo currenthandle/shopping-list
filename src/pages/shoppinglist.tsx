@@ -111,14 +111,6 @@ const ShoppingList: NextPage = () => {
   const { data: _shoppingList, isLoading: loadingShoppingList } =
     trpc.shoppingList.getShoppingList.useQuery()
 
-  useEffect(() => {
-    //console.log('shoppingList', _shoppingList)
-    dispatch({
-      type: ACTIONS.fetchShoppingList,
-      payload: _shoppingList as ShoppingListType,
-    })
-  }, [_shoppingList])
-
   const {
     data: _items,
     isLoading: loadingItems,
@@ -127,23 +119,17 @@ const ShoppingList: NextPage = () => {
     shoppingListId: _shoppingList?.id || '',
   })
 
-  // const initialItemState = {
-  //   items: _items || [],
-  // }
-
   const [state, dispatch] = useReducer(reducer, initialState)
-
   const { items, shoppingList } = state
 
   useEffect(() => {
-    // console.log('useEffect', _items)
-    console.log('_items', _items)
-    console.log('_items', _items)
-    console.log('_items', _items)
-    console.log('_items', _items)
-    console.log('_items', _items)
-    console.log('_items', _items)
-    console.log('_items', _items)
+    dispatch({
+      type: ACTIONS.fetchShoppingList,
+      payload: _shoppingList as ShoppingListType,
+    })
+  }, [_shoppingList])
+
+  useEffect(() => {
     dispatch({ type: 'FETCH_ITEMS', payload: _items as Item[] })
   }, [_items])
 
