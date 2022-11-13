@@ -11,7 +11,6 @@ import { Item } from '@prisma/client'
 interface EditorProps {
   name: string
   itemId: string
-  //refetchItems: () => Promise<void>
   dispatch: React.Dispatch<Action>
 }
 
@@ -34,7 +33,6 @@ const Editor = ({ name, itemId, dispatch }: EditorProps) => {
 
   const { mutate } = trpc.item.updateItem.useMutation({
     onSuccess: async () => {
-      //refetchItems()
       dispatch({
         type: 'UPDATE_ITEM',
         payload: { id: itemId, name: getValues().name },
@@ -83,17 +81,10 @@ interface ListItemProps {
   name: string
   id: string
   i: number
-  //refetchItems: () => Promise<void>
   dispatch: React.Dispatch<Action>
 }
 
-const ListItem = ({
-  name,
-  id: itemId,
-  i,
-  //refetchItems,
-  dispatch,
-}: ListItemProps) => {
+const ListItem = ({ name, id: itemId, i, dispatch }: ListItemProps) => {
   const { mutate: deleteItem } = trpc.item.deleteItem.useMutation({
     onSuccess: async (data) => {
       if (!data) {
@@ -120,12 +111,7 @@ const ListItem = ({
       <div className='flex w-6/12 justify-between'>
         <span>{i}) </span>
         {/* <span>{name}</span> */}
-        <Editor
-          dispatch={dispatch}
-          name={name}
-          itemId={itemId}
-          // refetchItems={refetchItems}
-        />
+        <Editor dispatch={dispatch} name={name} itemId={itemId} />
         {/* a small round icon button for deleting items  */}
         <button onClick={handleDeleteClick}>
           <TiDelete className='h-6 w-6 text-red-500' />

@@ -132,13 +132,10 @@ const ShoppingList: NextPage = () => {
   const { data: _shoppingList, isLoading: loadingShoppingList } =
     trpc.shoppingList.getShoppingList.useQuery()
 
-  const {
-    data: _items,
-    isLoading: loadingItems,
-    refetch: refetchItems,
-  } = trpc.item.getAllFromList.useQuery({
-    shoppingListId: _shoppingList?.id || '',
-  })
+  const { data: _items, isLoading: loadingItems } =
+    trpc.item.getAllFromList.useQuery({
+      shoppingListId: _shoppingList?.id || '',
+    })
 
   const [state, dispatch] = useReducer(reducer, initialState)
   const { items, shoppingList } = state
@@ -194,7 +191,6 @@ const ShoppingList: NextPage = () => {
             {Object.values(items || {}).map((item, i) => (
               // console.log('item!!!!!!!', item),
               <ListItem
-                // refetchItems={refetchItems}
                 dispatch={dispatch}
                 {...item}
                 key={item?.id}
