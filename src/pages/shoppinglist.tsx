@@ -29,11 +29,12 @@ const testIR: ItemRecords = {
   },
 }
 
-const ACTIONS = {
+export const ACTIONS = {
   fetchItems: 'FETCH_ITEMS',
   addItem: 'ADD_ITEM',
   fetchShoppingList: 'FETCH_SHOPPING_LIST',
   updateItem: 'UPDATE_ITEM',
+  deleteItem: 'DELETE_ITEM',
 }
 
 type State = {
@@ -51,7 +52,7 @@ export type Action = {
   //type: typeof actions[keyof typeof actions]
   //type: 'FETCH_ITEMS' | 'ADD_ITEM'
   type: string
-  payload: Item[] | ShoppingListType | UpateItemPayload
+  payload: Item[] | ShoppingListType | UpateItemPayload | string
 }
 
 let count = 0
@@ -63,6 +64,11 @@ function reducer(state: State, action: Action): State {
   console.log('state', state)
   console.log('action', action)
   switch (action.type) {
+    case ACTIONS.deleteItem: {
+      const items = { ...state.items }
+      delete items[action.payload as string]
+      return { ...state, items }
+    }
     case ACTIONS.updateItem: {
       const { id, name } = action.payload as UpateItemPayload
       const item = state.items[id]

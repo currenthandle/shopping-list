@@ -5,7 +5,8 @@ import { trpc } from '../utils/trpc'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Action } from '../pages/shoppinglist'
+import { Action, ACTIONS } from '../pages/shoppinglist'
+import { Item } from '@prisma/client'
 
 interface EditorProps {
   name: string
@@ -94,8 +95,12 @@ const ListItem = ({
   dispatch,
 }: ListItemProps) => {
   const { mutate: deleteItem } = trpc.item.deleteItem.useMutation({
-    onSuccess: async () => {
-      refetchItems()
+    onSuccess: async (data) => {
+      if (!data) {
+        throw new Error('Could not delete item')
+      }
+      //console.log('deleteItem', data)
+      dispatch({ type: ACTIONS.deleteItem, payload: data.id })
     },
     onError: (error) => {
       console.error('error', error)
