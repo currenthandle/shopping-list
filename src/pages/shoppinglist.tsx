@@ -33,6 +33,7 @@ const ACTIONS = {
   fetchItems: 'FETCH_ITEMS',
   addItem: 'ADD_ITEM',
   fetchShoppingList: 'FETCH_SHOPPING_LIST',
+  updateItem: 'UPDATE_ITEM',
 }
 
 type State = {
@@ -40,12 +41,17 @@ type State = {
   shoppingList: ShoppingListType
 }
 
-type Action = {
+type UpateItemPayload = {
+  id: string
+  name: string
+}
+
+export type Action = {
   // use the values of actions object to set the type on Action to type: 'FETCH_ITEMS' | 'ADD_ITEM'
   //type: typeof actions[keyof typeof actions]
   //type: 'FETCH_ITEMS' | 'ADD_ITEM'
   type: string
-  payload: Item[] | ShoppingListType
+  payload: Item[] | ShoppingListType | UpateItemPayload
 }
 
 let count = 0
@@ -57,6 +63,13 @@ function reducer(state: State, action: Action): State {
   console.log('state', state)
   console.log('action', action)
   switch (action.type) {
+    case ACTIONS.updateItem: {
+      const { id, name } = action.payload as UpateItemPayload
+      const item = state.items[id]
+      const newItem = { ...item, name }
+      const newItems = { ...state.items, [id]: newItem }
+      return { ...state, items: newItems as ItemRecords }
+    }
     case ACTIONS.fetchShoppingList:
       return {
         ...state,
@@ -170,7 +183,8 @@ const ShoppingList: NextPage = () => {
             {Object.values(items || {}).map((item, i) => (
               // console.log('item!!!!!!!', item),
               <ListItem
-                refetchItems={refetchItems}
+                // refetchItems={refetchItems}
+                dispatch={dispatch}
                 {...item}
                 key={item?.id}
                 i={1 + i}

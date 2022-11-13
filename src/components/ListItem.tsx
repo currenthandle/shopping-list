@@ -5,13 +5,16 @@ import { trpc } from '../utils/trpc'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Action } from '../pages/shoppinglist'
+
 interface EditorProps {
   name: string
   itemId: string
-  refetchItems: () => Promise<void>
+  //refetchItems: () => Promise<void>
+  dispatch: React.Dispatch<Action>
 }
 
-const Editor = ({ name, itemId, refetchItems }: EditorProps) => {
+const Editor = ({ name, itemId, dispatch }: EditorProps) => {
   const [isEditing, setIsEditing] = useState(false)
   //const [value, setValue] = useState('')
 
@@ -30,7 +33,11 @@ const Editor = ({ name, itemId, refetchItems }: EditorProps) => {
 
   const { mutate } = trpc.item.updateItem.useMutation({
     onSuccess: async () => {
-      refetchItems()
+      //refetchItems()
+      dispatch({
+        type: 'UPDATE_ITEM',
+        payload: { id: itemId, name: getValues().name },
+      })
       setIsEditing(false)
     },
     onError: (error) => {
@@ -75,10 +82,17 @@ interface ListItemProps {
   name: string
   id: string
   i: number
-  refetchItems: () => Promise<void>
+  //refetchItems: () => Promise<void>
+  dispatch: React.Dispatch<Action>
 }
 
-const ListItem = ({ name, id: itemId, i, refetchItems }: ListItemProps) => {
+const ListItem = ({
+  name,
+  id: itemId,
+  i,
+  //refetchItems,
+  dispatch,
+}: ListItemProps) => {
   const { mutate: deleteItem } = trpc.item.deleteItem.useMutation({
     onSuccess: async () => {
       refetchItems()
@@ -101,7 +115,12 @@ const ListItem = ({ name, id: itemId, i, refetchItems }: ListItemProps) => {
       <div className='flex w-6/12 justify-between'>
         <span>{i}) </span>
         {/* <span>{name}</span> */}
-        <Editor name={name} itemId={itemId} refetchItems={refetchItems} />
+        <Editor
+          dispatch={dispatch}
+          name={name}
+          itemId={itemId}
+          // refetchItems={refetchItems}
+        />
         {/* a small round icon button for deleting items  */}
         <button onClick={handleDeleteClick}>
           <TiDelete className='h-6 w-6 text-red-500' />
