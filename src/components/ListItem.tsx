@@ -5,7 +5,7 @@ import { trpc } from '../utils/trpc'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ACTIONS, type Action } from '../pages/shoppinglist'
+import { ACTIONS, type Action } from './Shoppinglist'
 import Editor from './Editor'
 
 interface ListItemProps {

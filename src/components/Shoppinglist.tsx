@@ -3,7 +3,7 @@ import { trpc } from '../utils/trpc'
 import { useForm /*, type SubmitHandler */ } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import ListItem from '../components/ListItem'
+import ListItem from './ListItem'
 import { useEffect, useReducer } from 'react'
 import {
   type Item,
@@ -99,7 +99,7 @@ function reducer(state: State, action: Action): State {
       return state
   }
 }
-const ShoppingList: NextPage = () => {
+export const ShoppingList: NextPage = () => {
   const schema = z.object({
     name: z.string().min(2, { message: 'Too short' }),
   })
